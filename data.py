@@ -21,7 +21,6 @@ def state_to_tensor(state):
     # 0: walls, 1: food, 2: capsules, 3: pacman, 4: ghosts
     # If you want additional scalar features (score, remaining food, ...),
     # consider returning them separately or appending as extra channels.
-<<<<<<< HEAD
 
     if state is None:
         raise ValueError("state must be a GameState object, got None")
@@ -69,8 +68,6 @@ def state_to_tensor(state):
 
     tensor = torch.from_numpy(stacked).float()
     return tensor
-=======
->>>>>>> ef4f5b6d46e0d5e2b93c4082fd5b7b3303f3c4e3
 
     if state is None:
         raise ValueError("state must be a GameState object, got None")
