@@ -6,7 +6,8 @@ class PacmanNetwork(nn.Module):
     """
     Your neural network architecture.
     """
-    def __init__(self, H, W, C, hidden_dims, activation=nn.ReLU, num_actions=5): # num_actions = 5 car EST, OUEST, NORD, SUD, STOP
+    def __init__(self, H, W, C, hidden_dims, activation=nn.ReLU, num_actions=5): 
+        # num_actions = 5 car EST, OUEST, NORD, SUD, STOP
         super().__init__()
 
         self.flat_input_size = C*H*W
