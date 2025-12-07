@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from einops import rearrange
 
 
 class PacmanNetwork(nn.Module):
@@ -24,12 +23,8 @@ class PacmanNetwork(nn.Module):
         self.criterion = nn.BCELoss()
 
     def forward(self, x):
-        _, H, W = x.shape
+        x = x.view(x.size(0), -1)
         
-        input_mlp = rearrange(x, "C H W -> C (H W)")
+        logits = self.mlp(x)
         
-        input_mlp = torch.cat(input_mlp, dim=-1)
-        
-        even_pred = self.mlp(input_mlp)
-        
-        return rearrange(even_pred, "C (H W) -> C H W", H=H, W=W)
+        return logits
