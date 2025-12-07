@@ -3,7 +3,7 @@ import pickle
 import torch
 from torch.utils.data import Dataset
 
-#dfghudis
+
 def state_to_tensor(state):
     """
     Build the input of your network.
