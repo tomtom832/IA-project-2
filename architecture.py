@@ -14,7 +14,7 @@ class PacmanNetwork(nn.Module):
         self.mlp = [nn.Linear(H * W, hidden_dims[0]), activation]
 
         for i in range(len(hidden_dims) - 1):
-            self.mlp += [nn.Linear(hidden_dims[i], hidden_dims[i+1]), activation)
+            self.mlp += [nn.Linear(hidden_dims[i], hidden_dims[i+1]), activation]
 
         head = [nn.Linear(hidden_dims[-1], H * W), nn.Sigmoid()]
 
