@@ -10,7 +10,7 @@ from data import PacmanDataset
 class Pipeline(nn.Module):
     def __init__(self, path):
         """
-        Initialize your training pipeline.
+        Initialize your training pipeline.zizi
 
         Arguments:
             path: The file path to the pickled dataset.
