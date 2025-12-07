@@ -22,7 +22,7 @@ class PacmanNetwork(nn.Module):
 
         self.criterion = nn.BCELoss()
 
-        # hshsh
+        # hshshjjdjzi
 
     def forward(self, x):
         # Your code here
