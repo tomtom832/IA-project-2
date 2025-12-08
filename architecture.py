@@ -12,16 +12,14 @@ class PacmanNetwork(nn.Module):
 
         self.flat_input_size = C*H*W
 
-        self.mlp = [nn.Linear(self.flat_input_size, hidden_dims[0]), activation]
+        self.mlp = [nn.Linear(self.flat_input_size, hidden_dims[0]), activation()]
 
         for i in range(len(hidden_dims) - 1):
-            self.mlp += [nn.Linear(hidden_dims[i], hidden_dims[i+1]), activation]
+            self.mlp += [nn.Linear(hidden_dims[i], hidden_dims[i+1]), activation()]
 
-        head = [nn.Linear(hidden_dims[-1], num_actions), nn.CrossEntropyLoss()]
+        head = [nn.Linear(hidden_dims[-1], num_actions)]
 
         self.mlp = nn.Sequential(*(self.mlp + head))
-
-        self.criterion = nn.BCELoss()
 
     def forward(self, x):
         x = x.view(x.size(0), -1)
