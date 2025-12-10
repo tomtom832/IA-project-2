@@ -2,6 +2,7 @@ from pacman_module.game import Agent
 
 from data import state_to_tensor
 from train import PacmanDataset
+import torch # type: ignore
 
 
 class PacmanAgent(Agent):
@@ -25,5 +26,8 @@ class PacmanAgent(Agent):
             state: a GameState object
         """
         x = state_to_tensor(state).unsqueeze(0)
-        # Your code here
-        return # ...
+        with torch.no_grad():   # on n'entraîne pas ⇒ pas de backprop
+            logits = self.model(x)                 # prédiction brute (shape = (1,5))
+            action_idx = torch.argmax(logits, dim=1).item()  # index de l'action (0–4)
+
+        return INT_TO_ACTION[action_idx] # type: ignore
