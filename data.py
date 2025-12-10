@@ -94,7 +94,7 @@ class PacmanDataset(Dataset):
             data = pickle.load(f)
 
         ACTION_TO_INT = {
-            'NORTH': 0,
+            'North': 0,
             'South': 1,
             'East': 2,
             'West': 3,
