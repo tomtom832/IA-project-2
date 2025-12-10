@@ -62,9 +62,8 @@ class Pipeline(nn.Module):
                 # du gradient calculé
                 self.optimizer.step()
                 
-                # affiche la loss seulement tous les 10 batches
-                if batch_idx % 10 == 0:
-                    print(f"Epoch {epoch}, Batch {batch_idx}, Loss: {loss.item():.4f}")
+            # affiche la loss seulement toutes les époch
+            print(f"Epoch {epoch}, Loss: {loss.item():.4f}")
                     
             # on sauvegarde à chaque epoch
             torch.save(self.model.state_dict(), "pacman_model.pth")
