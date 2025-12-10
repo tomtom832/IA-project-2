@@ -2,7 +2,7 @@ from pacman_module.game import Agent
 
 from data import state_to_tensor
 from train import PacmanDataset
-import torch # type: ignore
+import torch
 
 
 class PacmanAgent(Agent):
@@ -16,6 +16,14 @@ class PacmanAgent(Agent):
         super().__init__()
 
         self.model = model.eval()
+        
+        self.INT_TO_ACTION = {
+            0: 'North',
+            1: 'South',
+            2: 'East',
+            3: 'West',
+            4: 'Stop'
+        }
 
     def get_action(self, state):
         """
@@ -30,4 +38,4 @@ class PacmanAgent(Agent):
             logits = self.model(x)                 # prédiction brute (shape = (1,5))
             action_idx = torch.argmax(logits, dim=1).item()  # index de l'action (0–4)
 
-        return INT_TO_ACTION[action_idx] # type: ignore
+        return self.INT_TO_ACTION[action_idx]
