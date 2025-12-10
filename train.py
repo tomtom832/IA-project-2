@@ -17,9 +17,14 @@ class Pipeline(nn.Module):
         """
         super().__init__()
 
+        dataset = PacmanDataset(path)
+        input, action = dataset[0]
+        C, H, W = input.shape
+        hidden_dims = [128, 64]
+
         self.path = path
         self.dataset = PacmanDataset(self.path)
-        self.model = PacmanNetwork()
+        self.model = PacmanNetwork(H, W, hidden_dims, C)
 
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=1e-3)
@@ -27,8 +32,8 @@ class Pipeline(nn.Module):
     def train(self):
         print("Beginning of the training of your network...")
 
-        dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=32, shuffle=True)
-        for epoch in range(10):
+        dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=256, shuffle=True)
+        for epoch in range(1000):
             for batch_idx, (data, target) in enumerate(dataloader):
                 self.optimizer.zero_grad()
                 output = self.model(data)
@@ -43,5 +48,5 @@ class Pipeline(nn.Module):
 
 
 if __name__ == "__main__":
-    pipeline = Pipeline(path="pacman_dataset.pkl")
+    pipeline = Pipeline(path="datasets/pacman_dataset.pkl")
     pipeline.train()
