@@ -17,12 +17,8 @@ np.random.seed(SEED)
 path_to_saved_model = "pacman_model.pth"
 
 # Feel free to add code here depending on your implementation
-hidden_dims = [128, 64]
-dataset = PacmanDataset("datasets/pacman_dataset.pkl")
-input, action = dataset[0]
-C, H, W = input.shape
 
-model = PacmanNetwork(H, W, hidden_dims, C)
+model = PacmanNetwork()
 model.load_state_dict(torch.load(path_to_saved_model, map_location="cpu"))
 model.eval()
 

@@ -21,13 +21,8 @@ class Pipeline(nn.Module):
         self.path = path
         self.dataset = PacmanDataset(self.path)
         
-        # on récupère les dim à partir du dataset
-        input, action = self.dataset[0]
-        C, H, W = input.shape
-        hidden_dims = [128, 64]
-        
         # on initialise le modèle
-        self.model = PacmanNetwork(H, W, hidden_dims, C)
+        self.model = PacmanNetwork()
 
         # on charge la sauvegarde si elle existe
         save_path = "pacman_model.pth"

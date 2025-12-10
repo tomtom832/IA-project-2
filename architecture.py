@@ -1,12 +1,21 @@
 import torch
 import torch.nn as nn
+from data import PacmanDataset
+
+# on récupère les dimensions du dataset
+dataset = PacmanDataset("datasets/pacman_dataset.pkl")
+input, action = dataset[0]
+C, H, W = input.shape
+
+# on définit les dim de hidden_dims
+hidden_dims = [128, 64]
 
 
 class PacmanNetwork(nn.Module):
     """
     Your neural network architecture.
     """
-    def __init__(self, H, W, hidden_dims, C, activation=nn.ReLU(), num_actions=5): 
+    def __init__(self, C=C, H=H, W=W, hidden_dims=hidden_dims, activation=nn.ReLU(), num_actions=5): 
         # num_actions = 5 car EST, OUEST, NORD, SUD, STOP
         super().__init__()
 
