@@ -26,9 +26,6 @@ class PacmanNetwork(nn.Module):
         # on met toutes les couches dans un réseau séquentiel
         self.mlp = nn.Sequential(*(self.mlp + head))
 
-        # définit comment on calcule si le réseau a raison ou tort
-        self.criterion = nn.CrossEntropyLoss()
-
     def forward(self, x):
         """
         x de forme (B, C, H, W)
