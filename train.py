@@ -32,7 +32,7 @@ class Pipeline(nn.Module):
             print("Chargement du modèle...")
             self.model.load_state_dict(torch.load(save_path))
         else:
-            print("Création d'un nouveau modèle")
+            print("Création d'un nouveau modèle...")
 
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=1e-3)
