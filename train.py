@@ -18,15 +18,18 @@ class Pipeline(nn.Module):
         """
         super().__init__()
 
-        dataset = PacmanDataset(path)
-        input, action = dataset[0]
-        C, H, W = input.shape
-        hidden_dims = [128, 64]
-
         self.path = path
         self.dataset = PacmanDataset(self.path)
+        
+        # on récupère les dim à partir du dataset
+        input, action = self.dataset[0]
+        C, H, W = input.shape
+        hidden_dims = [128, 64]
+        
+        # on initialise le modèle
         self.model = PacmanNetwork(H, W, hidden_dims, C)
 
+        # on charge la sauvegarde si elle existe
         save_path = "pacman_model.pth"
         if os.path.exists(save_path):
             print("Chargement du modèle...")
@@ -34,23 +37,41 @@ class Pipeline(nn.Module):
         else:
             print("Création d'un nouveau modèle...")
 
+        # on définit le critère et l'optimizer
+        # le critère détermine comment on calcule si le réseau a raison ou tort
+        # (si l'action qu'il prend est bonne ou pas par rapport à l'expert)
         self.criterion = nn.CrossEntropyLoss()
+        # ça permet à l'optimizer de garder une trace des paramètres qui 
+        # pourraient être mis à jour durant l'entraînement
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=1e-3)
 
+    # boucle d'entraînement
     def train(self):
         print("Beginning of the training of your network...")
 
         dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=256, shuffle=True)
         for epoch in range(1000):
             for batch_idx, (data, target) in enumerate(dataloader):
+                # réinitialise la loss et les gradients du batch précédent
                 self.optimizer.zero_grad()
+                
+                # calcule la loss par rapport à l'expert
                 output = self.model(data)
                 loss = self.criterion(output, target)
+                
+                # met à jour les gradients de chaque paramètre du modèle
+                # (poids du réseau)
                 loss.backward()
+                
+                # Met à jour les paramètres du modèle à partir 
+                # du gradient calculé
                 self.optimizer.step()
+                
+                # affiche la loss seulement tous les 10 batches
                 if batch_idx % 10 == 0:
                     print(f"Epoch {epoch}, Batch {batch_idx}, Loss: {loss.item():.4f}")
 
+        # sauvegarde le modèle entraîné
         torch.save(self.model.state_dict(), "pacman_model.pth")
         print("Model saved !")
 
