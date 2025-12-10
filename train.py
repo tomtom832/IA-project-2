@@ -1,4 +1,5 @@
 import pickle
+import os
 
 import torch
 import torch.nn as nn
@@ -25,6 +26,13 @@ class Pipeline(nn.Module):
         self.path = path
         self.dataset = PacmanDataset(self.path)
         self.model = PacmanNetwork(H, W, hidden_dims, C)
+
+        save_path = "pacman_model.pth"
+        if os.path.exists(save_path):
+            print("Chargement du modèle...")
+            self.model.load_state_dict(torch.load(save_path))
+        else:
+            print("Création d'un nouveau modèle")
 
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=1e-3)
