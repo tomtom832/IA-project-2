@@ -93,13 +93,28 @@ class PacmanDataset(Dataset):
         with open(path, "rb") as f:
             data = pickle.load(f)
 
+        ACTION_TO_INT = {
+            'NORTH': 0,
+            'South': 1,
+            'East': 2,
+            'West': 3,
+            'Stop': 4
+        }
+
         self.inputs = []
         self.actions = []
 
         for s, a in data:
             x = state_to_tensor(s)
+
+            # si a est un tuple ('North',...)
+            if isinstance(a, tuple):
+                a = a[0]
+
+            a_int = ACTION_TO_INT[a]
+
             self.inputs.append(x)
-            self.actions.append(a)
+            self.actions.append(a_int)
 
     # longueur du dataset
     def __len__(self):
