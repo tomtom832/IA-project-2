@@ -65,6 +65,9 @@ class Pipeline(nn.Module):
                 # affiche la loss seulement tous les 10 batches
                 if batch_idx % 10 == 0:
                     print(f"Epoch {epoch}, Batch {batch_idx}, Loss: {loss.item():.4f}")
+                    
+            # on sauvegarde à chaque epoch
+            torch.save(self.model.state_dict(), "pacman_model.pth")
 
         # sauvegarde le modèle entraîné
         torch.save(self.model.state_dict(), "pacman_model.pth")
