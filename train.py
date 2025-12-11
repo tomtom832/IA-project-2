@@ -45,7 +45,7 @@ class Pipeline(nn.Module):
         print("Beginning of the training of your network...")
 
         dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=256, shuffle=True)
-        for epoch in range(1000):
+        for epoch in range(150000):
             for batch_idx, (data, target) in enumerate(dataloader):
                 # réinitialise la loss et les gradients du batch précédent
                 self.optimizer.zero_grad()
@@ -62,7 +62,7 @@ class Pipeline(nn.Module):
                 # du gradient calculé
                 self.optimizer.step()
                 
-            # affiche la loss seulement toutes les époch
+            # affiche la loss seulement une fois par epoch
             print(f"Epoch {epoch}, Loss: {loss.item():.4f}")
                     
             # on sauvegarde à chaque epoch
