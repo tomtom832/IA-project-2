@@ -44,7 +44,7 @@ class Pipeline(nn.Module):
     def train(self):
         print("Beginning of the training of your network...")
 
-        dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=64, shuffle=True)
+        dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=256, shuffle=True)
         for epoch in range(1000):
             for batch_idx, (data, target) in enumerate(dataloader):
                 # réinitialise la loss et les gradients du batch précédent
