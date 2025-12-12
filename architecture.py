@@ -15,10 +15,25 @@ class PacmanNetwork(nn.Module):
     """
     Your neural network architecture.
     """
-    def __init__(self, C=C, H=H, W=W, hidden_dims=hidden_dims, activation=nn.ReLU(), num_actions=5): 
+    def __init__(self, C=5, n_kernels=32): 
         # num_actions = 5 car EST, OUEST, NORD, SUD, STOP
+        
         super().__init__()
 
+        self.net = nn.Sequential(
+            nn.Conv2d(in_channels=1, out_channels=n_kernels, kernel_size=5),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Conv2d(in_channels=n_kernels, out_channels=n_kernels, kernel_size=5),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Flatten(),
+            nn.Linear(n_kernels * 4 * 4, 50),
+            nn.ReLU(),
+            nn.Linear(50, C)
+        )
+
+        """"
         # aplatir les dimensions du tenseur de data
         self.flat_input_size = C*H*W
 
@@ -34,12 +49,16 @@ class PacmanNetwork(nn.Module):
 
         # on met toutes les couches dans un réseau séquentiel
         self.mlp = nn.Sequential(*(self.mlp + head))
-
+        """
+        
     def forward(self, x):
         """
         x de forme (B, C, H, W)
         """
 
+        return self.net(x)
+
+        """
         # Aplatir x
         # On garde la dim B (x.size(0)) et on écrase le reste (-1)
         # les dim de x deviennent donc (B, C*H*W)
@@ -47,3 +66,4 @@ class PacmanNetwork(nn.Module):
 
         # passage dans le mlp qui sort un vecteur de taille (B, num_actions)
         return self.mlp(x)
+        """
