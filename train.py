@@ -97,7 +97,7 @@ class Pipeline(nn.Module):
             preds = torch.argmax(output, dim=1)
             correct += (preds ==target).sum()
 
-        test_loss /= len(self.test_loader.dataset)
+        test_loss /= len(self.test_loader)
         accuracy = correct / len(self.test_loader.dataset)
 
         print(f"Test Loss: {test_loss:.4f}, Accuracy: {accuracy:.4f}")
