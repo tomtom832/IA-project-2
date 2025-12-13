@@ -3,6 +3,7 @@ import os
 
 import torch
 import torch.nn as nn
+from torch.utils.data import DataLoader, random_split
 
 from architecture import PacmanNetwork
 from data import PacmanDataset
@@ -40,13 +41,24 @@ class Pipeline(nn.Module):
         # pourraient être mis à jour durant l'entraînement
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=1e-3)
 
+        self.total_size = len(self.dataset)
+        self.train_size = int(0.8 * self.total_size)
+        self.test_size = self.total_size - self.train_size
+        
+        self.train_set, self.test_set = random_split(self.dataset, 
+                                                     [self.train_size, self.test_size])
+        
+        self.train_loader = DataLoader(self.train_set, batch_size=64, shuffle=True)
+        self.test_loader = DataLoader(self.test_set, batch_size=64, shuffle=False)
+
     # boucle d'entraînement
     def train(self):
         print("Beginning of the training of your network...")
+        self.model.train()
 
-        dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=64, shuffle=True)
+        # dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=64, shuffle=True)
         for epoch in range(20):
-            for batch_idx, (data, target) in enumerate(dataloader):
+            for batch_idx, (data, target) in enumerate(self.train_loader):
                 # réinitialise la loss et les gradients du batch précédent
                 self.optimizer.zero_grad()
                 
@@ -63,7 +75,7 @@ class Pipeline(nn.Module):
                 self.optimizer.step()
                 
             # affiche la loss seulement une fois par epoch
-            print(f"Epoch {epoch}, Loss: {loss.item():.4f}")
+            print(f"Epoch {epoch}, Train Loss: {loss.item():.4f}")
                     
             # on sauvegarde à chaque epoch
             torch.save(self.model.state_dict(), "pacman_model.pth")
@@ -72,7 +84,27 @@ class Pipeline(nn.Module):
         torch.save(self.model.state_dict(), "pacman_model.pth")
         print("Model saved !")
 
+    def test(self):
+        print("Beginning of the test of the model...")
+        self.model.eval()
+
+        test_loss = 0
+        correct = 0
+
+        for data, target in self.test_loader:
+            output = self.model(data)
+            test_loss += self.criterion(output, target).item()
+            preds = torch.argmax(output, dim=1)
+            correct += (preds ==target).sum()
+
+        test_loss /= len(self.test_loader.dataset)
+        accuracy = correct / len(self.test_loader.dataset)
+
+        print(f"Test Loss: {test_loss:.4f}, Accuracy: {accuracy:.4f}")
+        print("Test finished !")
+
 
 if __name__ == "__main__":
     pipeline = Pipeline(path="datasets/pacman_dataset.pkl")
     pipeline.train()
+    pipeline.test()
