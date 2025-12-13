@@ -27,10 +27,10 @@ class Pipeline(nn.Module):
         # on charge la sauvegarde si elle existe
         save_path = "pacman_model.pth"
         if os.path.exists(save_path):
-            print("Chargement du modèle...")
-            self.model.load_state_dict(torch.load(save_path))
+            print("Loading the model...")
+            self.model.load_state_dict(torch.load(save_path, map_location='cpu'))
         else:
-            print("Création d'un nouveau modèle...")
+            print("Creation of a new model...")
 
         # on définit le critère et l'optimizer
         # le critère détermine comment on calcule si le réseau a raison ou tort
