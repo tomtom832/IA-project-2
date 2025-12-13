@@ -24,6 +24,14 @@ class SubmissionWriter:
         self.model.load_state_dict(torch.load(model_path, map_location="cpu"))
         self.model.eval()
 
+        self.INT_TO_ACTION = {
+            0:'North',
+            1:'South',
+            2:'East',
+            3:'West',
+            4:'Stop'
+        }
+
 
     def predict_on_testset(self):
         """
@@ -35,7 +43,12 @@ class SubmissionWriter:
         actions = []
         for state in self.test_set:
             x = state_to_tensor(state).unsqueeze(0)
-            # Your code here
+
+            logits = self.model(x)
+
+            action_idx = torch.argmax(logits, dim=1).item()
+            action = self.INT_TO_ACTION[action_idx]
+            actions.append(action)
         return actions
 
     def write_csv(self, actions, file_name="submission"):
