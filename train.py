@@ -1,5 +1,6 @@
 import pickle
 import os
+from collections import Counter
 
 import torch
 import torch.nn as nn
@@ -57,7 +58,7 @@ class Pipeline(nn.Module):
         self.model.train()
 
         # dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=64, shuffle=True)
-        for epoch in range(20):
+        for epoch in range(10):
             for batch_idx, (data, target) in enumerate(self.train_loader):
                 # réinitialise la loss et les gradients du batch précédent
                 self.optimizer.zero_grad()
@@ -90,17 +91,23 @@ class Pipeline(nn.Module):
 
         test_loss = 0
         correct = 0
+        all_preds = []
 
         for data, target in self.test_loader:
             output = self.model(data)
             test_loss += self.criterion(output, target).item()
             preds = torch.argmax(output, dim=1)
+            all_preds.extend(preds.tolist())
             correct += (preds ==target).sum()
 
         test_loss /= len(self.test_loader)
         accuracy = correct / len(self.test_loader.dataset)
 
         print(f"Test Loss: {test_loss:.4f}, Accuracy: {accuracy:.4f}")
+
+        print("Actions prédites:")
+        print(Counter(all_preds))
+
         print("Test finished !")
 
 
