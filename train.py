@@ -51,12 +51,6 @@ class Pipeline(nn.Module):
         self.train_loader = DataLoader(self.train_set, batch_size=64, shuffle=True)
         self.test_loader = DataLoader(self.test_set, batch_size=64, shuffle=False)
 
-    def accuracy_fn(self, y_pred, y_true):
-        size = len(y_pred)
-        correct = torch.eq(y_pred, y_true).sum().item()
-        acc = (correct / size)
-        return acc
-
     # boucle d'entraînement
     def train(self):
         print("Beginning of the training of your network...")
@@ -64,13 +58,19 @@ class Pipeline(nn.Module):
 
         # dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=64, shuffle=True)
         for epoch in range(5):
+            total_train_loss = 0
+            train_correct = 0
             for batch_idx, (data, target) in enumerate(self.train_loader):
-                # calcule la loss par rapport à l'expert
                 output = self.model(data)
+
+                # calcule la loss par rapport à l'expert
                 loss = self.criterion(output, target)
 
-                output_train_pred = torch.armax(output, dim=1)
-                train_accuracy = self.accuracy_fn(y_pred=output_train_pred, y_true=target)
+                total_train_loss += loss.item()
+
+                train_pred = torch.argmax(output, dim=1)
+                train_correct += (train_pred == target).sum().item()
+
                 
                 # réinitialise la loss et les gradients du batch précédent
                 self.optimizer.zero_grad()
@@ -82,9 +82,12 @@ class Pipeline(nn.Module):
                 # Met à jour les paramètres du modèle à partir 
                 # du gradient calculé
                 self.optimizer.step()
+            
+            avg_loss = total_train_loss / len(self.train_loader)
+            avg_accuracy = train_correct / len(self.train_loader.dataset)
 
             # affiche la loss seulement une fois par epoch
-            print(f"Epoch {epoch}, Train Loss: {loss.item():.4f}, Train Accuracy: {train_accuracy:.2%}")
+            print(f"Epoch {epoch}, Train Loss: {avg_loss:.4f}, Train Accuracy: {avg_accuracy:.2%}")
                     
             # on sauvegarde à chaque epoch
             torch.save(self.model.state_dict(), "pacman_model.pth")
@@ -98,14 +101,12 @@ class Pipeline(nn.Module):
         self.model.eval()
 
         test_loss = 0
-        correct = 0
-        all_preds = []
+        correct = 0 
 
         for data, target in self.test_loader:
             output = self.model(data)
             test_loss += self.criterion(output, target).item()
-            _, pred = torch.max(output.data, 1)
-            all_preds.extend(pred.tolist())
+            pred = torch.argmax(output, dim=1)
             correct += (pred == target).sum().item()
 
         test_loss /= len(self.test_loader)
