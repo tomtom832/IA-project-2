@@ -57,7 +57,7 @@ class Pipeline(nn.Module):
         self.model.train()
 
         # dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=64, shuffle=True)
-        for epoch in range(50):
+        for epoch in range(10):
             for batch_idx, (data, target) in enumerate(self.train_loader):
                 # réinitialise la loss et les gradients du batch précédent
                 self.optimizer.zero_grad()
@@ -101,9 +101,8 @@ class Pipeline(nn.Module):
 
         test_loss /= len(self.test_loader)
         accuracy = correct / len(self.test_loader.dataset)
-        accuracy *= 100
 
-        print(f"Test Loss: {test_loss:.4f}, Accuracy: {accuracy:.2f}")
+        print(f"Test Loss: {test_loss:.4f}, Accuracy: {accuracy:.2%}")
 
 if __name__ == "__main__":
     pipeline = Pipeline(path="datasets/pacman_dataset.pkl")
