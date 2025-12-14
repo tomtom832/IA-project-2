@@ -56,6 +56,7 @@ class Pipeline(nn.Module):
     def train(self):
         print("Beginning of the training of your network...")
         self.model.train()
+        total_train_loss = 0 
 
         # dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=64, shuffle=True)
         for epoch in range(10):
@@ -74,9 +75,13 @@ class Pipeline(nn.Module):
                 # Met à jour les paramètres du modèle à partir 
                 # du gradient calculé
                 self.optimizer.step()
+
+                total_train_loss += loss.item()
+            
+            avg_loss = total_train_loss / len(self.train_loader)
                 
             # affiche la loss seulement une fois par epoch
-            print(f"Epoch {epoch}, Train Loss: {loss.item():.4f}")
+            print(f"Epoch {epoch}, Train Loss: {loss.item():.4f}, Average loss: {avg_loss:.4f}")
                     
             # on sauvegarde à chaque epoch
             torch.save(self.model.state_dict(), "pacman_model.pth")
@@ -96,9 +101,9 @@ class Pipeline(nn.Module):
         for data, target in self.test_loader:
             output = self.model(data)
             test_loss += self.criterion(output, target).item()
-            preds = torch.argmax(output, dim=1)
+            preds = torch.max(output, data, 1)
             all_preds.extend(preds.tolist())
-            correct += (preds ==target).sum()
+            correct += (preds == target).sum().item()
 
         test_loss /= len(self.test_loader)
         accuracy = correct / len(self.test_loader.dataset)
