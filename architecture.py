@@ -28,6 +28,7 @@ class PacmanNetwork(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
             nn.Flatten(),
+            nn.Dropout(p=0.5),
             nn.Linear(n_kernels * (H//4) * (W//4), 50),
             nn.ReLU(),
             nn.Linear(50, C)
