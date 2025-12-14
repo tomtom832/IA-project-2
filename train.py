@@ -57,7 +57,7 @@ class Pipeline(nn.Module):
         self.model.train()
 
         # dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=64, shuffle=True)
-        for epoch in range(5):
+        for epoch in range(50):
             for batch_idx, (data, target) in enumerate(self.train_loader):
                 # réinitialise la loss et les gradients du batch précédent
                 self.optimizer.zero_grad()
