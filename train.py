@@ -51,6 +51,12 @@ class Pipeline(nn.Module):
         self.train_loader = DataLoader(self.train_set, batch_size=64, shuffle=True)
         self.test_loader = DataLoader(self.test_set, batch_size=64, shuffle=False)
 
+    def accuracy_fn(self, y_pred, y_true):
+        size = len(y_pred)
+        correct = torch.eq(y_pred, y_true).sum().item()
+        acc = (correct / size)
+        return acc
+
     # boucle d'entraînement
     def train(self):
         print("Beginning of the training of your network...")
@@ -59,13 +65,16 @@ class Pipeline(nn.Module):
         # dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=64, shuffle=True)
         for epoch in range(5):
             for batch_idx, (data, target) in enumerate(self.train_loader):
-                # réinitialise la loss et les gradients du batch précédent
-                self.optimizer.zero_grad()
-                
                 # calcule la loss par rapport à l'expert
                 output = self.model(data)
                 loss = self.criterion(output, target)
+
+                output_train_pred = torch.armax(output, dim=1)
+                train_accuracy = self.accuracy_fn(y_pred=output_train_pred, y_true=target)
                 
+                # réinitialise la loss et les gradients du batch précédent
+                self.optimizer.zero_grad()
+
                 # met à jour les gradients de chaque paramètre du modèle
                 # (poids du réseau)
                 loss.backward()
@@ -75,7 +84,7 @@ class Pipeline(nn.Module):
                 self.optimizer.step()
 
             # affiche la loss seulement une fois par epoch
-            print(f"Epoch {epoch}, Train Loss: {loss.item():.4f}")
+            print(f"Epoch {epoch}, Train Loss: {loss.item():.4f}, Train Accuracy: {train_accuracy:.2%}")
                     
             # on sauvegarde à chaque epoch
             torch.save(self.model.state_dict(), "pacman_model.pth")
