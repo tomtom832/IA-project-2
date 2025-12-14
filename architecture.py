@@ -33,24 +33,6 @@ class PacmanNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(50, C)
         )
-
-        """"
-        # aplatir les dimensions du tenseur de data
-        self.flat_input_size = C*H*W
-
-        # créer la couche d'entrée
-        self.mlp = [nn.Linear(self.flat_input_size, hidden_dims[0]), activation]
-
-        # créer les couches cachées
-        for i in range(len(hidden_dims) - 1):
-            self.mlp += [nn.Linear(hidden_dims[i], hidden_dims[i+1]), activation]
-
-        # créer la couche de sortie
-        head = [nn.Linear(hidden_dims[-1], num_actions)]
-
-        # on met toutes les couches dans un réseau séquentiel
-        self.mlp = nn.Sequential(*(self.mlp + head))
-        """
         
     def forward(self, x):
         """
@@ -58,13 +40,3 @@ class PacmanNetwork(nn.Module):
         """
 
         return self.net(x)
-
-        """
-        # Aplatir x
-        # On garde la dim B (x.size(0)) et on écrase le reste (-1)
-        # les dim de x deviennent donc (B, C*H*W)
-        x = x.view(x.size(0), -1)
-
-        # passage dans le mlp qui sort un vecteur de taille (B, num_actions)
-        return self.mlp(x)
-        """
