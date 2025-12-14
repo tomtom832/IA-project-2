@@ -57,10 +57,13 @@ class Pipeline(nn.Module):
         self.model.train()
 
         # dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=64, shuffle=True)
-        for epoch in range(1):
+        for epoch in range(5):
             total_train_loss = 0
             train_correct = 0
-            for batch_idx, (data, target) in enumerate(self.train_loader):
+            for batch_idx, (data, target) in enumerate(self.train_loader):       
+                # réinitialise la loss et les gradients du batch précédent
+                self.optimizer.zero_grad()
+
                 output = self.model(data)
 
                 # calcule la loss par rapport à l'expert
@@ -71,20 +74,35 @@ class Pipeline(nn.Module):
                 train_pred = torch.argmax(output, dim=1)
                 train_correct += (train_pred == target).sum().item()
 
-                
-                # réinitialise la loss et les gradients du batch précédent
-                self.optimizer.zero_grad()
-
                 # met à jour les gradients de chaque paramètre du modèle
                 # (poids du réseau)
                 loss.backward()
+
+
+                data_flip = torch.flip(data, [3])
+                target_flip = target.clone()
+
+                mask_east = (target == 2)
+                mask_west = (target == 3)
+
+                target_flip[mask_east] = 3
+                target_flip[mask_west] = 2
+
+                output_flip = self.model(data_flip)
+                loss_flip = self.criterion(output_flip, target_flip)
+                loss_flip.backward()
+
+                total_train_loss += loss_flip.item()
+                flip_pred = torch.argmax(output_flip, dim=1)
+                train_correct += (flip_pred == target_flip).sum().item()
+    
                 
                 # Met à jour les paramètres du modèle à partir 
                 # du gradient calculé
                 self.optimizer.step()
             
-            avg_loss = total_train_loss / len(self.train_loader)
-            avg_accuracy = train_correct / len(self.train_loader.dataset)
+            avg_loss = total_train_loss / (2*len(self.train_loader))
+            avg_accuracy = train_correct / (2*len(self.train_loader.dataset))
 
             # affiche la loss seulement une fois par epoch
             print(f"Epoch {epoch}, Train Loss: {avg_loss:.4f}, Train Accuracy: {avg_accuracy:.2%}")
