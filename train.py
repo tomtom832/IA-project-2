@@ -57,7 +57,7 @@ class Pipeline(nn.Module):
         self.model.train()
 
         # dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=64, shuffle=True)
-        for epoch in range(35):
+        for epoch in range(40):
             total_train_loss = 0
             train_correct = 0
             for batch_idx, (data, target) in enumerate(self.train_loader):       
